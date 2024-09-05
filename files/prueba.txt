@@ -1,12 +1,12 @@
 EXEC {
-if not(blocked?( left )) then { turnToMy ( left ); walk(1); } else {
-nop ;} fi
+if not(isBlocked?( left )) then { turnToMy ( left ); walk(1); } else {
+nop ;} fi;
 }
 EXEC {
 safeExe (walk(1));
-moves (left ,left , forward , right , back );
+moves (left ,left , forward , right , backwards);
 }
- NEW VAR rotate = 3
+ NEW VAR rotate= 3
  NEW MACRO foo (c, p)
  { drop(c);
  letgo (p);
@@ -16,20 +16,20 @@ moves (left ,left , forward , right , back );
  NEW VAR one= 1
  NEW MACRO goend ()
  {
- if not (blocked?( front ))
+ if not (isBlocked?( front ))
  then { move (one); goend (); }
  else { nop; }
  fi;
  }
  NEW MACRO fill ()
  {
- repeat roomForChips times
- { if not ( zero?( myChips )) { drop(1) ;} else { nop; } fi ;} ;
+ rep roomForChips times
+ { if not ( zero?( myChips )) then { drop(1) ;} else { nop; } fi ;} ;
  }
  NEW MACRO fill1 ()
  {
- while not zero?( rooomForChips )
- { if not ( zero?( myChips )) { drop(1) ;} e l s e { nop; } fi ;
+ while not zero?( roomForChips )
+ { if not (zero?( myChips )) then { drop(1) ;} else { nop; } fi ;
  } ;
  }
  NEW MACRO grabAll ()
