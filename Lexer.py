@@ -70,8 +70,8 @@ def convertirATokens(listaPalabras: list[str]) -> list[str]: # Funcion que convi
         palabra:str = listaPalabras[i]                   # Se toma la palabra en la posicion i y se le asigna un token dependiendo de su tipo
         if (palabra in noChanges) or (palabra in symbols): # Si la palabra es un token que no cambia se agrega a la lista de tokens tal cual
             listTokens.append(palabra)                   
-        elif (palabra in constants):                     # Si la palabra es una constante o una variable
-            listTokens.append("n")
+        elif (palabra in constants) or (isNumber(palabra)) or (palabra in personalizedVariables):                    
+            listTokens.append("n")                       # Si la palabra es una constante, un numero o una variable se agrega un token n
         elif (isNumber(palabra)):                        # Si la palabra es un numero
             listTokens.append("#")
         elif (palabra in commands):                      # Si la palabra es un comando
@@ -82,8 +82,6 @@ def convertirATokens(listaPalabras: list[str]) -> list[str]: # Funcion que convi
             listTokens.append("D2")
         elif (palabra in orientations):                  # Si la palabra es una orientacion
             listTokens.append("O")
-        elif (palabra in personalizedVariables):         # Si la palabra es una variable anteriormente definida
-            listTokens.append("var".format(palabra))
         elif (palabra in personalizedMacros):            # Si la palabra es un macro anteriormente definido
             listTokens.append("macro({})".format(palabra))
 

@@ -17,7 +17,7 @@ moves (left ,left , forward , right , backwards);
  NEW MACRO goend ()
  {
  if not (isBlocked?( front ))
- then { move (one); goend (); }
+ then { walk (one); goend (); }
  else { nop; }
  fi;
  }
