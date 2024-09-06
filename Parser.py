@@ -27,7 +27,9 @@ def revisar_corchetes(str_tokens: str,index:int) -> bool:
     else:
         print(str_tokens[indice_open:])
     return True
-
+def revisar_definicion(tipo:str, cadena:str,index:int):
+    
+    pass
 def revisar_lista_tokens(tokens: list[str])-> bool:
     str_tokens=" ".join(tokens)
     for i, token in enumerate(tokens):

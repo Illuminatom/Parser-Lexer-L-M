@@ -110,6 +110,7 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[]) -> list[str]
                 listTokens.append("macro({})".format(palabra))
 
         elif (palabra == "new"):                         # Si la palabra es NEW se debe ver si se esta definiendo una nueva variable o un nuevo macro
+            listTokens.append("new")
             if (listaPalabras[i+1] == "var") and (listaPalabras[i+2].isalpha()):
                 personalizedVariables.append(listaPalabras[i+2])
                 i+=1
