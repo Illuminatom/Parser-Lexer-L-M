@@ -6,3 +6,4 @@ def leerTokens(archivo: str) -> list[str]:
     
     return tokens
 
+tokens:list[str] = leerTokens("files/prueba")
