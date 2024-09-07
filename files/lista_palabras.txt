@@ -42,7 +42,7 @@ foo
 (c,
 p)
 {
-drop(c);
+turntomy(c);
 letgo
 (p);
 walk(
@@ -114,7 +114,7 @@ macro
 fill1
 ()
 {
-while
+do
 not
 zero?(
 roomforchips
@@ -136,7 +136,7 @@ nop;
 fi
 ;
 }
-;
+od;
 }
 new
 macro
