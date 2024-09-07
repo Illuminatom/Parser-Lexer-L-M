@@ -78,17 +78,17 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[]) -> list[str]
 
     while(i < len(listaPalabras)):                       # Mientras no se haya recorrido toda la lista de palabras
         palabra:str = listaPalabras[i]                   # Se toma la palabra en la posicion i y se le asigna un token dependiendo de su tipo
-        palabra=palabra.replace(" ","")
+        
         #print("la palabra actual es:-"+palabra+"-")
         #print(parametros_macros)
         if (palabra in noChanges) or (palabra in symbols): # Si la palabra es un token que no cambia se agrega a la lista de tokens tal cual
             listTokens.append(palabra)  
             #print("se agrega el token:",palabra)       
-        elif (palabra in constants) or (isNumber(palabra)) or (palabra in personalizedVariables) or (palabra in parametros_macros):                    
-            listTokens.append("n")                       # Si la palabra es una constante, un numero o una variable se agrega un token n
+        elif (palabra in constants) or (isNumber(palabra)) or (palabra in parametros_macros):                    
+            listTokens.append("n")                       # Si la palabra es una constante o un numero se agrega un token n
             #print("se agrega el token:","n")  
-        elif (isNumber(palabra)):                        # Si la palabra es un numero
-            listTokens.append("#")
+        elif (palabra in personalizedVariables):         # Si la palabra es un numero
+            listTokens.append("variable")
         elif (palabra in commands):                      # Si la palabra es un comando
             listTokens.append("command")
             #print("se agrega el token:","command")  
