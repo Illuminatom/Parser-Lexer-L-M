@@ -5,7 +5,7 @@ orientations:list[str] = ["north", "south", "east", "west"]
 constants:list[str] = ["size", "myx", "myy", "mychips", "myballons", "balloonshere", "chipshere", "roomforchips"]
 commands:list[str] = ["walk", "jump", "drop", "pick", "grab", "letgo", "pop"]
 noChanges:list[str] = ["exec", "if", "fi", "else", "then", "do", "od", "rep", "times", "nop", "moves", "not",
-                        "isblocked?", "isfacing?", "zero?", "turntomy", "turntothe", "safeexe"]
+                        "isblocked?", "isfacing?", "zero?", "turntomy", "turntothe", "safeexe", "front"]
 symbols:list[str] = ["(", ")", "{", "}", ",", ";", ":","="]
 personalizedMacros:list[str] = []
 personalizedVariables:list[str] = []
@@ -90,11 +90,8 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[]) -> list[str]
         elif (isNumber(palabra)):                        # Si la palabra es un numero
             listTokens.append("#")
         elif (palabra in commands):                      # Si la palabra es un comando
-            if (palabra=="turntomy") or (palabra=="turntothe"):
-                listTokens.append(palabra)
-            else: 
-                listTokens.append("command")
-                #print("se agrega el token:","command")  
+            listTokens.append("command")
+            #print("se agrega el token:","command")  
         elif (palabra in directions):                    # Si la palabra es una direccion
             listTokens.append("D")
             #print("se agrega el token:","D")  
@@ -105,28 +102,25 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[]) -> list[str]
             listTokens.append("O")
             #print("se agrega el token:","O")  
         elif (palabra in personalizedMacros):            # Si la palabra es un macro anteriormente definido
-           if listaPalabras[i-2] != "new" and i>0:
-                #print("se agrega el token:","macro({})".format(palabra))  
-                listTokens.append("macro({})".format(palabra))
+           listTokens.append("macro({})".format(palabra))
 
         elif (palabra == "new"):                         # Si la palabra es NEW se debe ver si se esta definiendo una nueva variable o un nuevo macro
             listTokens.append("new")
-            if (listaPalabras[i+1] == "var") and (listaPalabras[i+2].isalpha()):
+            if (listaPalabras[i+1] == "var") and (listaPalabras[i+2].isalpha() or listaPalabras[i+2].isalnum()):
                 personalizedVariables.append(listaPalabras[i+2])
                 i+=1
-            elif (listaPalabras[i+1] == "var") and not(listaPalabras[i+2].isalpha()):
+            elif (listaPalabras[i+1] == "var") and not(listaPalabras[i+2].isalpha() or listaPalabras[i+2].isalnum()):
                 nuevaVar:str = cleanPalabra(listaPalabras[i+2])[0] 
                 personalizedVariables.append(nuevaVar)
                 i+=1
-            elif (listaPalabras[i+1] == "macro") and (listaPalabras[i+2].isalpha()):
+            elif (listaPalabras[i+1] == "macro") and (listaPalabras[i+2].isalpha() or listaPalabras[i+2].isalnum()):
                 personalizedMacros.append(listaPalabras[i+2])
                 if listaPalabras[i+3] != "()":
                     listaParametros=procesarParametros(listaPalabras[i+3]+listaPalabras[i+4])
-                    listTokens.append("macro({})".format(listaPalabras[i+2]))
                     parametros_macros=parametros_macros+listaParametros
                     #print("yesid",listaParametros,parametros_macros)
                 i+=1 
-            elif (listaPalabras[i+1] == "macro") and not(listaPalabras[i+2].isalpha()):
+            elif (listaPalabras[i+1] == "macro") and not(listaPalabras[i+2].isalpha() or listaPalabras[i+2].isalnum()):
                 nuevaVar:str = cleanPalabra(listaPalabras[i+2])[0] 
                 personalizedVariables.append(nuevaVar)
                 i+=1
@@ -142,7 +136,7 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[]) -> list[str]
                 #print(tokens, " - -- - ",palabra)
             else:
                 listTokens.append("ERROR({})".format(palabra))  # Si no se encontro ningun token se agrega un error a la lista        
-                #print("se agrega el token:","ERROR({})".format(palabra))  
+                print("se agrega el token:","ERROR({})".format(palabra))  
         i+=1                                             # Se aumenta el contador para pasar a la siguiente palabra
     
     return listTokens
