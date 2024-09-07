@@ -1,4 +1,5 @@
 import os
+
 directions:list[str] = ["left", "right", "back"]
 moveDirections:list[str] = ["forward", "backwards"]
 orientations:list[str] = ["north", "south", "east", "west"]
@@ -9,6 +10,7 @@ noChanges:list[str] = ["exec", "if", "fi", "else", "then", "do", "od", "rep", "t
 symbols:list[str] = ["(", ")", "{", "}", ",", ";", ":","="]
 personalizedMacros:list[str] = []
 personalizedVariables:list[str] = []
+
 def procesarParametros(parametros: str) -> tuple[list[str], str]:
     # Verificar que los paréntesis están bien colocados
     if parametros[0] == "(" and parametros[-1] == ")":

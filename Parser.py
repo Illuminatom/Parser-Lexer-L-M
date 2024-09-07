@@ -41,19 +41,87 @@ def revisar_lista_tokens(tokens: list[str])-> bool:
 
 tokens:list[str] = leerTokens("files/prueba")
 
-def validarCondiciones(tokens: list[str]) -> int:
+def validarCondiciones(tokens: list[str]) -> int:                  # Funcion que valida las condiciones y devuelve la posicion del token que cierra la condicion
     i:int = 0
-    while i < len(tokens):
-        if (tokens[i] == "isblocked?"):
-            if (tokens[i+1] == "("):
-                if (tokens[i+2] in Lexer.directions) or tokens[i+2] == "front":
-                    if (tokens[i+3] == ")"):
-                        i+=4
-                        continue
-                    else:
-                        raise ValueError("Error de sintaxis: Falta un paréntesis de cierre.")
+    if (tokens[i] == "isblocked?"):
+        if (tokens[i+1] == "("):
+            if (tokens[i+2] in Lexer.directions) or tokens[i+2] == "front":
+                if (tokens[i+3] == ")"):
+                    i+=4
+                    return i
                 else:
-                    raise ValueError("Error de sintaxis: El parametro para la condicion isBlocked? debe ser una direccion (front, back, left, rigth) pero es {}.".format(tokens[i+2]))
+                    raise ValueError("Error de sintaxis: Falta un paréntesis de cierre.")
             else:
-                raise ValueError("Error de sintaxis: Falta un paréntesis de apertura.")
-        
+                raise ValueError("Error de sintaxis: El parametro para la condicion isBlocked? debe ser una direccion (front, back, left, rigth) pero es {}.".format(tokens[i+2]))
+        else:
+            raise ValueError("Error de sintaxis: Falta un paréntesis de apertura.")
+    elif (tokens[i] == "isfacing?"):
+        if (tokens[i+1] == "("):
+            if (tokens[i+2] in Lexer.orientations):
+                if (tokens[i+3] == ")"):
+                    i+=4
+                    return i
+                else:
+                    raise ValueError("Error de sintaxis: Falta un paréntesis de cierre.")
+            else:
+                raise ValueError("Error de sintaxis: El parametro para la condicion isFacing? debe ser una orientacion (north, south, east, west) pero es {}.".format(tokens[i+2]))
+        else:
+            raise ValueError("Error de sintaxis: Falta un paréntesis de apertura.")
+    elif (tokens[i] == "zero?"):
+        if (tokens[i+1] == "("):
+            if (tokens[i+2] == "n") or (tokens[i+2] == "variable"):
+                if (tokens[i+3] == ")"):
+                    i+=4
+                    return i
+                else:
+                    raise ValueError("Error de sintaxis: Falta un paréntesis de cierre.")
+            else:
+                raise ValueError("Error de sintaxis: El parametro para la condicion zero? debe ser 'n' o 'variable' pero es {}.".format(tokens[i+2]))
+        else:
+            raise ValueError("Error de sintaxis: Falta un paréntesis de apertura.")
+    elif (tokens[i] == "not"):
+        if(tokens[i+1] == "("):
+            i+=2
+            i += validarCondiciones(tokens[i:])
+            if (i <= len(tokens) -1) and (tokens[i] == ")"):
+                i+=1
+                return i
+            else:
+                raise ValueError("Error de sintaxis: Falta un paréntesis de cierre.")
+        else:
+            raise ValueError("Error de sintaxis: Falta un paréntesis de apertura.")
+    else:
+        raise ValueError("Error de sintaxis: La condicion no es válida.")
+    
+#Pruebas
+#notAnidados = [
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "not", "(", 
+#    "isblocked?", "(", "front", ")", 
+#    ")", ")", ")", ")", ")", ")", ")", ")", ")", ")", 
+#    ")", ")", ")", ")", ")", ")", ")", ")", ")"
+#]
+#
+#condicionNormal: list[str] = ["isfacing?","(","north",")"]
+#try:  
+#    print(len(notAnidados))
+#    print(validarCondiciones(notAnidados))
+#except ValueError as e:
+#    print(e)

@@ -42,7 +42,7 @@ foo
 (c,
 p)
 {
-turntomy(c);
+drop(c);
 letgo
 (p);
 walk(
