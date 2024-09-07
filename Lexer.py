@@ -1,12 +1,12 @@
 import os
 
-directions:list[str] = ["left", "right", "back"]
+directions:list[str] = ["left", "right"]
 moveDirections:list[str] = ["forward", "backwards"]
 orientations:list[str] = ["north", "south", "east", "west"]
 constants:list[str] = ["size", "myx", "myy", "mychips", "myballons", "balloonshere", "chipshere", "roomforchips"]
 commands:list[str] = ["walk", "jump", "drop", "pick", "grab", "letgo", "pop"]
 noChanges:list[str] = ["exec", "if", "fi", "else", "then", "do", "od", "rep", "times", "nop", "moves", "not",
-                        "isblocked?", "isfacing?", "zero?", "turntomy", "turntothe", "safeexe", "front"]
+                        "isblocked?", "isfacing?", "zero?", "turntomy", "turntothe", "safeexe", "front", "back"]
 symbols:list[str] = ["(", ")", "{", "}", ",", ";", ":","="]
 personalizedMacros:list[str] = []
 personalizedVariables:list[str] = []
