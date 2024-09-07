@@ -43,7 +43,8 @@ def revisar_lista_tokens(tokens: list[str])-> bool:
 
 tokens:list[str] = leerTokens("files/prueba")
 
- # Funcion que valida las condiciones y devuelve la posicion del token que cierra la condicion
+
+# Funcion que valida las condiciones y devuelve la posicion del token que cierra la condicion
 def validarCondiciones(tokens: list[str]) -> int:                 
     i:int = 0
     if (tokens[i] == "isblocked?"):
@@ -129,7 +130,9 @@ def validarCondiciones(tokens: list[str]) -> int:
 #    print(e)
 #
 
-
+#####                                     #####
+##### FUNCIONES VERIFICADORAS DE COMANDOS #####
+#####                                     #####
 # Funcion que valida los comandos que reciben un parametro n o variable ("walk", "jump", "drop", "pick", "grab", "letgo", "pop") y devuelve la posicion del token que cierra el comando
 def validarComandosN(tokens:list[str]) -> int: 
     if (tokens[0] == "command"):
@@ -242,5 +245,180 @@ def validarSafeExe(tokens: list[str]) -> int:
 #safeexec: list[str] = ["safeexec", "(","command", "(", "n", ")", ")", "if", "(", "isblocked?", "(", "front", ")", ")", "then", "{", "moves", "(", "D2", ",", "D", ",", "D2", ")", "}"]
 #try:
 #    print(validarSafeExe(safeexec))
+#except ValueError as e:
+#    print(e)
+
+#####                                                     #####
+#####        FUNCIONES PARA VERIFICAR LOS BLOQUES         #####
+#####                                                     ##### 
+# Funcion que valida la estructura de un bloque y devuelve la posicion del token que cierra el bloque
+def validarBloque(tokens: list[str]) -> int:
+    i:int = 1
+    while(i < len(tokens)):
+        if (tokens[i] == "command"):
+            i += validarComandosN(tokens[i:])
+            if (tokens[i+1] == ";"):
+                i += 2
+                print(tokens[i])
+            else:
+                raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {} en vez".format(tokens[i]))
+        elif (tokens[i] == "turntomy") or (tokens[i] == "turntothe"):
+            i += validarTurns(tokens[i:])
+            if (tokens[i+1] == ";"):
+                i += 2
+            else:
+                raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {} en vez".format(tokens[i]))
+        elif (tokens[i] == "moves"):
+            i += validarMoves(tokens[i:])
+            if (tokens[i+1] == ";"):
+                i += 2
+            else:
+                raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {} en vez".format(tokens[i]))
+        elif (tokens[i] == "safeexec"):
+            i += validarSafeExe(tokens[i:])
+            if (tokens[i+1] == ";"):
+                i += 2
+            else:
+                raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {} en vez".format(tokens[i]))
+        elif (tokens[i] == "nop"):
+            if (tokens[i+1] == ";"):
+                i += 2
+            else:
+                raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {} en vez".format(tokens[i]))
+        elif (tokens[i] == "if"):
+            i += validarIf(tokens[i:])
+            if (tokens[i] == "fi"):
+                i += 1
+            if (tokens[i] == ";"):
+                i += 1
+            else:
+                raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {0} en vez y el i es {1} y antes hay {2} y despues hay {3}".format(tokens[i], i, tokens[i-1], tokens[i+1]))
+
+        elif (tokens[i] == "}"):
+            return i
+        else:
+            raise ValueError("Error de sintaxis: El bloque no es válido. Hay {0} en vez y despues hay {1} y i es {2}".format(tokens[i], tokens[i+1], i))
+
+#####                                                     #####
+##### FUNCIONES VERIFICADORAS DE ESTRUCTURAS DE CONTROL   #####
+#####                                                     #####
+# Funcion que valida la estructura de control if y devuelve la posicion del token que cierra la estructura
+def validarIf(tokens: list[str]) -> int:
+    if (tokens[0] == "if"):
+        i:int = 1
+        i += validarCondiciones(tokens[i:])     #Ultimo token de la condicion
+        if (tokens[i] == "then"):
+            i += 1
+            if (tokens[i] == "{"):
+                i += validarBloque(tokens[i:])+ 1  #Ultimo token del bloque
+                if (tokens[i] == "else"):         #Que haya o no un else es opcional
+                    i += validarElse(tokens[i:]) +1   #Ultimo token del else y su bloque
+                if (tokens[i] == ";"):
+                    return i +2
+                if (tokens[i] == "fi"):
+                    return i+1
+                else:
+                    raise ValueError("Error de sintaxis: Falta el cierre de la estructura if. Hay {0} y el i es {1} y antes hay {2} y despues hay {3}".format(tokens[i], i, tokens[i-1], tokens[i+1]))
+        else:
+            raise ValueError("Error de sintaxis: Falta la palabra reservada 'then' despues de la condicion. {}".format(tokens[i]))
+    else:
+        raise ValueError("Error de sintaxis: La estructura if no valida.")
+
+#Funcion para verificar recursivamente los else's de un if
+def validarElse(tokens: list[str]) -> int:
+    if (tokens[0] == "else"):
+        i:int = 1
+        if (tokens[i] == "{"):
+            i += validarBloque(tokens[i:])  #Ultimo token del bloque
+        if (tokens[i+1] == "else"):
+            i += validarElse(tokens[i+1:])
+        return i
+    else:
+        raise ValueError("Error de sintaxis: La estructura else no es válida. Hay {0} y el i es {1}".format(tokens[0], i))
+
+#Prueba para validarIf
+#si:list[str] = ["if",           #0
+#                "isblocked?",   #1
+#                "(",            #2
+#                "front",        #3
+#                ")",            #4
+#                "then",         #5
+#                "{",            #6
+#                "moves",        #7
+#                "(",            #8
+#                "D2",           #9
+#                ",",            #10
+#                "D",            #11
+#                ",",            #12
+#                "D2",           #13
+#                ")",            #14
+#                ";",            #15
+#                "}",            #16
+#                "else",         #17
+#                "{",            #18
+#                "command",      #19
+#                "(",            #20
+#                "n",            #21
+#                ")",            #22
+#                ";",            #23
+#                "}",            #24
+#                "else",         #25
+#                "{",            #26
+#                "turntomy",     #27
+#                "(",            #28
+#                "D",            #29
+#                ")",            #30
+#                ";",            #31
+#                "}",            #32
+#                "else",         #33
+#                "{",            #34
+#                "if",           #35
+#                "isblocked?",   #36
+#                "(",            #37
+#                "front",        #38
+#                ")",            #39
+#                "then",         #40
+#                "{",            #41
+#                "nop",          #42
+#                ";",            #43
+#                "}",            #44
+#                "fi",           #45
+#                ";",            #46
+#                "}",            #47
+#                "fi"]           #48
+#try:
+#    print(validarIf(si))
+#except ValueError as e:
+#    print(e)
+
+#Prueba para validarBloque
+#bloque: list[str] = ["{", 
+#                     "command", 
+#                     "(", 
+#                     "n", 
+#                     ")", 
+#                     ";",
+#                     "if", 
+#                     "isblocked?", 
+#                     "(", 
+#                     "front", 
+#                     ")", 
+#                     "then", 
+#                     "{", 
+#                     "moves", 
+#                     "(", 
+#                     "D2", 
+#                     ",", 
+#                     "D", 
+#                     ",", 
+#                     "D2", 
+#                     ")", 
+#                     ";", 
+#                     "}", 
+#                     "fi", 
+#                     ";", 
+#                     "}"]
+#try:
+#    print(validarBloque(bloque))
 #except ValueError as e:
 #    print(e)
