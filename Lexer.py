@@ -144,8 +144,8 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[],param_O=[],pa
     while(i < len(listaPalabras)):                       # Mientras no se haya recorrido toda la lista de palabras
         palabra:str = listaPalabras[i]                   # Se toma la palabra en la posicion i y se le asigna un token dependiendo de su tipo
         
-        print("la palabra actual es:-"+palabra+"-")
-        print(param_O)
+        #print("la palabra actual es:-"+palabra+"-")
+        #print(param_O)
         if (palabra in noChanges) or (palabra in symbols): # Si la palabra es un token que no cambia se agrega a la lista de tokens tal cual
             listTokens.append(palabra)  
             #print("se agrega el token:",palabra)

@@ -1,9 +1,9 @@
-macros = []
-variables = {}
-
 import os
 import re
 import Lexer
+
+macros:list = []
+variables = {}
 
 def leerTokens(archivo: str) -> list[str]:
     tokens: list[str] = Lexer.convertirATokens(Lexer.crearListaPalabras(archivo))
@@ -33,9 +33,7 @@ def revisar_corchetes(str_tokens: str,index:int) -> bool:
     else:
         print(str_tokens[indice_open:])
     return True
-def revisar_definicion(tipo:str, cadena:str,index:int):
-    
-    pass
+
 def revisar_lista_tokens(tokens: list[str])-> bool:
     str_tokens=" ".join(tokens)
     for i, token in enumerate(tokens):
@@ -43,6 +41,7 @@ def revisar_lista_tokens(tokens: list[str])-> bool:
         if token=="exec":
             corchetes=revisar_corchetes(str_tokens,i)
             print(corchetes)
+            
 def validar_asignacion_variables(asignacion):
     respuesta = True
     respuesta = asignacion[0] == "variable"
@@ -55,45 +54,63 @@ def validar_llamada_macro(llamada):
         return True
     else:
         return False       
-def validar_new_variable(new_variable):
-    str_variable=" ".join(new_variable[1:])
-    respuesta = True
-    respuesta = new_variable[0] == "new"
-    respuesta = respuesta and new_variable[1] == "variable"
-    respuesta = respuesta and new_variable[2] == "="
-    respuesta = respuesta and (new_variable[2] == "n" or new_variable[2] == "variable")
-    if respuesta:
-        global variables
-        variables.append(str_variable)
-    return respuesta 
-def validar_new_macro(new_macro:list[str]):
-    respuesta = True
-    if new_macro[0] != "new":
-        return False
-    elif new_macro[1] != "macro":
-        return False
-    elif  not (new_macro[2].isalpha() or new_macro[2].isalnum()):
-        return False
-    if (new_macro[3]=="(") and (new_macro[4]==")"):
-        #revisar bloque
-        #suponiendo que esta bien definido
-        global macros
-        macros.append(new_macro[1:4])
-        pass
-    else:
-        submacro=new_macro[3:]
-        inicio = submacro.index('(')
-        fin = submacro.index(')', inicio)
-        subcadena = "".join(submacro[inicio:fin+1]) 
 
-        if re.match(r"\((O|n|D)(,(O|n|D))*\)", subcadena):
-            #revisar bloque
-            #suponiendo que esta bien definido
-            global macros
-            macros.append(new_macro[1:fin+1])            
-            pass
+#####                                         #####
+##### FUNCIONES VERIFICADORAS DE DEFINICIONES #####
+#####                                         #####
+# Funcion que valida la creacion de un nuevo macro y retorna la posicion del token que cierra la definicion del mismo
+def validarNewMacro(tokens:list[str]) -> int:
+    if tokens[0] == "new":
+        if tokens[1] == "macro":
+            if (tokens[2].isalpha() or tokens[2].isalnum()):
+                if (tokens[3]=="(") and (tokens[4]==")"):
+                    i:int = 5
+                    macros.append(tokens[1:4])
+                    if (tokens[i] == "{"):
+                        i += validarBloque(tokens[i:])
+                        if (tokens[i] == "}"):
+                            return i
+                        else:
+                            raise ValueError("Error de sintaxis: Falta un cierre de bloque.")
+                    else:
+                        raise ValueError("Error de sintaxis: Falta un bloque después de la definición del macro.")
+                elif (tokens[3] == "(") and (tokens[4] != ")"):
+                    i:int = 3
+                    i += validarListaAtributos(tokens[i:])
+                    j:int = i
+                    if (tokens[i+1] == "{"):
+                            i += validarBloque(tokens[i+1:])
+                            macros.append("".join(tokens[2:j+1]))  
+                            return i          
+                    else:
+                        raise ValueError("Error de sintaxis: Falta un bloque después de la definición del macro.")
+                else:
+                    raise ValueError("Error de sintaxis: Faltan los atributos despues del nombre del macro.")
+        elif (tokens[1] == "variable"):
+            if(tokens[2] == "="):
+                if(tokens[3] == "n") or (tokens[3] == "variable"):
+                    return 3
+                else:
+                    raise ValueError("Error de sintaxis: El valor de la variable debe ser 'n' o 'variable' pero es {}.".format(tokens[3]))
+            else:
+                raise ValueError("Error de sintaxis: Falta un signo de igual despues del nombre de la variable.")  
         else:
-            return False 
+            raise ValueError("Error de sintaxis: Despues de la palabra reservada new debe haber macro o variable pero hay {}.".format(tokens[1]))      
+    else:
+        raise ValueError("Error de sintaxis: La creacion de macro no es valida.")
+
+#Funcion que valida que una lista de atributos para un macro sea correcta y devuelve la posicion del token que cierra la lista
+def validarListaAtributos(tokens: list[str]) -> int:
+    i:int = 1
+    while(i < len(tokens)):
+        if (tokens[i] == "O") or (tokens[i] == "n") or (tokens[i] == "D") or (tokens[i] == ","):
+            i += 1
+        elif (tokens[i] == ")"):
+            return i
+        else:
+            raise ValueError("Error de sintaxis: La lista de atributos no es válida.")
+
+
  # Funcion que valida las condiciones y devuelve la posicion del token que cierra la condicion
 def validarCondiciones(tokens: list[str]) -> int:                 
     i:int = 0
@@ -751,4 +768,18 @@ def validarDo(tokens: list[str]) -> int:
 #except ValueError as e:
 #    print(e)
 tokens:list[str] = leerTokens("files/prueba")
-revisar_lista_tokens(tokens)
+
+##Prueba para validarListaAtributos
+#atributos: list[str] = ["(", "O", ",", "n", ",", "D", ",", "n", ",", "D", ")"]
+#try:
+#    print(validarListaAtributos(atributos))
+#except ValueError as e:
+#    print(e)
+
+#Prueba para validar_new_macro
+new_macro: list[str] = ["new", "macro", "macro1", "(", "D", ",", "O", ",", "n",")", "{", "command", "(", "n", ")", ";", "}"]
+try:
+    print(validarNewMacro(new_macro))
+    print(macros)
+except ValueError as e:
+    print(e)
