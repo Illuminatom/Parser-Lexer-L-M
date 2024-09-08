@@ -347,8 +347,6 @@ def validarDo(tokens: list[str]) -> int:
         i += validarCondiciones(tokens[i:])
         if (tokens[i] == "{"):
             i += validarBloque(tokens[i:])+1
-            if (tokens[i] == ";"):
-                i += 1
             if (tokens[i] == "od"):
                 return i
             else:
@@ -454,6 +452,39 @@ def validarDo(tokens: list[str]) -> int:
 #                 ";",               #93
 #                 "}",               #94
 #                 "od"]              #95
+#do: list[str] = ["do",          #0
+#                    "isblocked?",  #1
+#                    "(",           #2
+#                        "front",   #3
+#                    ")",           #4
+#                    "{",           #5
+#                        "command",  #6
+#                        "(",        #7
+#                            "n",    #8
+#                        ")",        #9
+#                        ";",        #10
+#                        "if",       #11
+#                        "isblocked?",#12
+#                        "(",        #13
+#                            "D",    #14
+#                        ")",        #15
+#                        "then",     #16
+#                        "{",        #17
+#                            "moves",#18
+#                            "(",    #19
+#                                "D2",#20
+#                                ",",    #21
+#                                "D",#22
+#                                ",",    #23
+#                                "D2",#24
+#                            ")",    #25
+#                        ";",        #26
+#                        "}",        #27
+#                        "fi",       #28
+#                    ";",            #29
+#                    "}",            #30
+#                "od"           #31
+#                ]
 #try:
 #    print(validarDo(do))
 #except ValueError as e:
