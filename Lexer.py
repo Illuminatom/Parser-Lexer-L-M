@@ -8,7 +8,7 @@ constants:list[str] = ["size", "myx", "myy", "mychips", "myballons", "balloonshe
 commands:list[str] = ["walk", "jump", "drop", "pick", "grab", "letgo", "pop"]
 noChanges:list[str] = ["exec", "if", "fi", "else", "then", "do", "od", "rep", "times", "nop", "moves", "not",
                         "isblocked?", "isfacing?", "zero?", "turntomy", "turntothe", "safeexe", "front", "back"]
-symbols:list[str] = ["(", ")", "{", "}", ",", ";", ":","="]
+symbols:list[str] = ["(", ")", "{", "}", ",", ";","="]
 personalizedMacros:list[str] = []
 personalizedVariables:list[str] = []
 def revisar_corchetes(str_palabras: str,index:int) :
