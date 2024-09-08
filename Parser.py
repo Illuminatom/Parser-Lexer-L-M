@@ -72,22 +72,16 @@ def validar_new_macro(new_macro:list[str]):
         return False
     elif new_macro[1] != "macro":
         return False
-    elif new_macro[2] == "(":
+    elif  not (new_macro[2].isalpha() or new_macro[2].isalnum()):
         return False
-    elif new_macro[2] != "(":
-        return False
-    elif  not (new_macro[3].isalpha() or new_macro[1].isalnum()):
-        return False
-    elif new_macro[4] == ")":
-        return False
-    if (new_macro[5]=="(") and (new_macro[6]==")"):
+    if (new_macro[3]=="(") and (new_macro[4]==")"):
         #revisar bloque
         #suponiendo que esta bien definido
         global macros
-        macros.append(new_macro[1:7])
+        macros.append(new_macro[1:4])
         pass
     else:
-        submacro=new_macro[5:]
+        submacro=new_macro[3:]
         inicio = submacro.index('(')
         fin = submacro.index(')', inicio)
         subcadena = "".join(submacro[inicio:fin+1]) 
