@@ -399,14 +399,18 @@ def validarBloque(tokens: list[str]) -> int:
 # Funcion que valida la estructura de control if y devuelve la posicion del token que cierra la estructura
 def validarIf(tokens: list[str]) -> int:
     if (tokens[0] == "if"):
-        i:int = 1
-        i += validarCondiciones(tokens[i:])     #Ultimo token de la condicion
+        if (tokens[1] == "("):
+            i:int = 2
+            i += validarCondiciones(tokens[i:])  +1   #Posicion despues de la condicion
+            print(tokens[i])
+        else:
+            raise ValueError("La condicion del if debe estar entre parentesis")
         if (tokens[i] == "then"):
             i += 1
             if (tokens[i] == "{"):
-                i += validarBloque(tokens[i:])+ 1  #Ultimo token del bloque
+                i += validarBloque(tokens[i:])+ 1  ##Posicion despues de la condicion
                 if (tokens[i] == "else"):         #Que haya o no un else es opcional
-                    i += validarElse(tokens[i:])    #Ultimo token del else y su bloque
+                    i += validarElse(tokens[i:])    ##Posicion despues de los else y sus bloques
                 if (tokens[i] == "fi"):
                     return i
                 else:
@@ -431,10 +435,14 @@ def validarElse(tokens: list[str]) -> int:
 #Funcion que validala estructura de control do y devuelve la posicion del token que cierra la estructura
 def validarDo(tokens: list[str]) -> int:
     if (tokens[0] == "do"):
-        i:int = 1
-        i += validarCondiciones(tokens[i:])
+        if (tokens[1] == "("):
+            i:int = 2
+            i += validarCondiciones(tokens[i:])  +1   #Posicion despues de la condicion
+            print(tokens[i])
+        else:
+            raise ValueError("La condicion del do debe estar entre parentesis")
         if (tokens[i] == "{"):
-            i += validarBloque(tokens[i:])+1
+            i += validarBloque(tokens[i:])+1            #Posicion despues del bloque
             if (tokens[i] == "od"):
                 return i
             else:
@@ -994,25 +1002,29 @@ def Parser() -> None:
     print("BIENVENIDO AL PARSER PARA LA GRAMATICA DEL ROBOT")
     direccionArchivo:str = input("Por favor ingrese el la direccion del archivo sin el .txt: ")
     tokens:list[str] = leerTokens(direccionArchivo)
-    opcionI:str = input("Que desea realizar? \n 1. Verificar el archivo \n 2. Ver los Tokens \n 3. Salir \n \t>")
-    while(opcionI != "3"):
+    opcionI:str = input("Que desea realizar? \n 1. Verificar la validez del archivo \n 2. Ver los Tokens numerados \n 3. Ver los Tokens como cadena\n 4. Salir \n \t>")
+    while(opcionI != "4"):
         if(opcionI == "1"):
             try:
                 print(validarCompleto(tokens))
                 print("FELICIDADES, TODO PARECE FUNCIONAR")
-                opcionI = input("Que desea realizar? \n 1. Verificar el archivo \n 2. Ver los Tokens \n 3. Salir\n \t>")
+                opcionI = input("\nQue desea realizar? \n 1. Verificar el archivo \n 2. Ver los Tokens numerados \n 3. Ver los Tokens como cadena\n 4. Salir \n \t> ")
             except ValueError as e:
                 print(e)
                 print("Muy mal, el programa fallo :C")
-                opcionI = input("Que desea realizar? \n 1. Verificar el archivo \n 2. Ver los Tokens \n 3. Salir\n \t>")
+                opcionI:str = input("\nQue desea realizar? \n 1. Verificar la validez del archivo \n 2. Ver los Tokens numerados \n 3. Ver los Tokens como cadena\n 4. Salir \n \t> ")
         elif(opcionI == "2"):
-            Lexer.imprimirTokensNumerados(tokens)
-            opcionI = input("Que desea realizar? \n 1. Verificar el archivo \n 2. Ver los Tokens \n 3. Salir\n \t>")
+            Lexer.imprimirTokensNumerados(tokens)    
+            opcionI:str = input("\nQue desea realizar? \n 1. Verificar la validez del archivo \n 2. Ver los Tokens numerados \n 3. Ver los Tokens como cadena\n 4. Salir \n \t> ")
         elif(opcionI == "3"):
+            Lexer.imprimirTokensStr(tokens)
+            opcionI:str = input("\nQue desea realizar? \n 1. Verificar la validez del archivo \n 2. Ver los Tokens numerados \n 3. Ver los Tokens como cadena\n 4. Salir \n \t > ")
+        elif(opcionI == "4"):
             print("Gracias por usar el programa. Hasta luego")
         else:
             print("Opcion invalida")
-            opcionI = input("Que desea realizar? \n 1. Verificar el archivo \n 2. Ver los Tokens \n 3. Salir\n \t>")
+            opcionI:str = input("\nQue desea realizar? \n 1. Verificar la validez del archivo \n 2. Ver los Tokens numerados \n 3. Ver los Tokens como cadena\n 4. Salir \n \t > ")
+
 
     
 Parser()

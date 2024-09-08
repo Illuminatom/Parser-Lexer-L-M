@@ -1,5 +1,5 @@
 EXEC {
-if not(isBlocked?( left )) then { turnToMy ( left ); walk(1); } else {
+if (not(isBlocked?( left ))) then { turnToMy ( left ); walk(1); } else {
 nop ;} fi;
 }
 EXEC {
@@ -17,7 +17,7 @@ moves (left ,left , forward , right , backwards);
  NEW VAR one= 1
  NEW MACRO goend ()
  {
- if not (isBlocked?( front ))
+ if (not (isBlocked?( front )))
  then { walk (one); goend (); }
  else { nop; }
  fi;
@@ -25,12 +25,12 @@ moves (left ,left , forward , right , backwards);
  NEW MACRO fill ()
  {
  rep roomForChips times
- { if not ( zero?( myChips )) then { drop(1) ;} else { nop; } fi ;} per;
+ { if( not ( zero?( myChips ))) then { drop(1) ;} else { nop; } fi ;} per;
  }
  NEW MACRO fill1 ()
  {
- do not (zero?( roomForChips ))
- { if not (zero?( myChips )) then { drop(1) ;} else { nop; } fi ;
+ do (not (zero?( roomForChips )))
+ { if(not (zero?( myChips ))) then { drop(1) ;} else { nop; } fi ;
  } od;
  }
  NEW MACRO grabAll ()

@@ -235,6 +235,14 @@ with open("files/tokens.txt", "w") as file:
         cadenaTokens += token + " "
     file.write(cadenaTokens)
 
+def imprimirTokensStr(tokens:list[str]) -> None:
+    cadenaTokens:str = ""
+    for token in tokens:
+        if(token == "exec") or (token == "new"):
+            cadenaTokens += "\n"
+        cadenaTokens += token + " "
+    print(cadenaTokens)
+
 def imprimirTokensNumerados(tokens:list[str]) -> None:
     i:int = 0
     while i < len(tokens):
