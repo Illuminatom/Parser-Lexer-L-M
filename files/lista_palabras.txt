@@ -39,10 +39,10 @@ rotate=
 new
 macro
 foo
-(f,comida,
+(f,comida1,
 p)
 {
-drop(comida);
+drop(comida1);
 letgo
 (p);
 turntomy
@@ -151,4 +151,11 @@ grab
 (
 balloonshere
 );
+}
+new
+macro
+moveanddrop(chips)
+{
+walk(steps);
+drop(chips);
 }

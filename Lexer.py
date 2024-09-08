@@ -14,7 +14,7 @@ personalizedVariables:list[str] = []
 def revisar_corchetes(str_palabras: str,index:int) :
     str_palabras=" ".join(str_palabras[index:])
     #print(index)
-    #print(str_palabras)
+    print(str_palabras)
     cerrado=False
     open_counter=0
     close_counter=0
@@ -59,7 +59,12 @@ def extraer_parametros_turntothe(cadena: str):
         return resultados
     else:
         return "No se encontraron funciones turntothe."
-def procesarParametros(parametros: str,lista_palabras,index) -> tuple[list[str], str]:
+def procesarParametros(parametros: str,lista_palabras,index,flag=False) -> tuple[list[str], str]:
+    if flag:
+        print("-"+parametros+"-")
+        indice_parentesis = parametros.index("(")
+        # Extrae desde el paréntesis de apertura hasta el final
+        parametros = parametros[indice_parentesis:]
     macro=revisar_corchetes(lista_palabras,index)
     macro_sin_espacios = macro.replace(" ", "")
     parametros_d=[]
@@ -191,8 +196,10 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[],param_O=[],pa
                 personalizedMacros.append(listaPalabras[i+2])
                 listTokens.append("macro")
                 if listaPalabras[i+3] != "()":
-                    #print(listaPalabras[i+3]+listaPalabras[i+4])
+                    print("i",listaPalabras[i+3]+listaPalabras[i+4])
                     listaParametros,param_d,param_o=procesarParametros(listaPalabras[i+3]+listaPalabras[i+4],listaPalabras,i+4)
+                    print(listaPalabras[i+2])
+                    print(listaParametros)
                     parametros_macros=parametros_macros+listaParametros
                     param_D=param_D+param_d
                     param_O=param_O+param_o
@@ -202,6 +209,15 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[],param_O=[],pa
                 nuevoMacro:str = cleanPalabra(listaPalabras[i+2])[0] 
                 listTokens.append("macro")
                 personalizedMacros.append(nuevoMacro)
+                print("nueva +i+macro",nuevoMacro)
+                print(listaPalabras[i+2])
+                if listaPalabras[i+3] != "()":
+                    listaParametros,param_d,param_o=procesarParametros(listaPalabras[i+2],listaPalabras,i,True)
+                    print(listaParametros)
+                    parametros_macros=parametros_macros+listaParametros
+                    param_D=param_D+param_d
+                    param_O=param_O+param_o
+                    #print("yesid",listaParametros,parametros_macros)
                 i+=1
 
         elif(palabra == ""):
