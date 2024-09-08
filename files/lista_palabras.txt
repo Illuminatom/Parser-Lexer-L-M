@@ -111,7 +111,7 @@ nop;
 }
 fi
 ;}
-;
+per;
 }
 new
 macro

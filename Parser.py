@@ -1,5 +1,3 @@
-import os
-import re
 import Lexer
 
 macros:list = []
@@ -376,13 +374,16 @@ def validarBloque(tokens: list[str]) -> int:
                 raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {0} en vez y el i es {1} y antes hay {2} y despues hay {3}".format(tokens[i], i, tokens[i-1], tokens[i+1]))
         elif (tokens[i] == "do"):
             i += validarDo(tokens[i:])
-            if (tokens[i] == "od"):
-                i += 1
-            if (tokens[i] == ";"):
-                i += 1
+            if (tokens[i] == "od") or (tokens[i] == ";"):
+                i += 2
             else:
                 raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {0} en vez y el i es {1} y antes hay {2} y despues hay {3}".format(tokens[i], i, tokens[i-1], tokens))
-
+        elif (tokens[i] == "rep"):
+            i += validarRep(tokens[i:])
+            if (tokens[i] == "per") or (tokens[i] == ";"):
+                i += 2
+            else:
+                raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {0} en vez y el i es {1} y antes hay {2} y despues hay {3}".format(tokens[i], i, tokens[i-1], tokens))    
         elif (tokens[i] == "}"):
             return i
         else:
@@ -439,6 +440,79 @@ def validarDo(tokens: list[str]) -> int:
             raise ValueError("Error de sintaxis: Falta el bloque de la estructura do.")
     else:
         raise ValueError("Error de sintaxis: La estructura do no es válida.")
+    
+#Funcion que valida la estructura de control rep y devuelve la posicion del token que cierra la estructura
+def validarRep(tokens: list[str]) -> int:
+    if (tokens[0] == "rep"):
+        if (tokens[1] == "n") or (tokens[1] == "variable"):
+            if (tokens[2] == "times"):
+                if (tokens[3] == "{"):
+                    i:int = 3
+                    i += validarBloque(tokens[i:])+1
+                    if (tokens[i] == "per"):
+                        return i
+                    else:
+                        raise ValueError("Error de sintaxis: Falta el cierre de la estructura rep.")
+                else:
+                    raise ValueError("Error de sintaxis: Falta el bloque de la estructura rep.")
+            else:
+                raise ValueError("Error de sintaxis: Falta la palabra reservada 'times' despues del valor de rep.")
+        else:
+            raise ValueError("Error de sintaxis: Falta el valor de rep.")
+    else:
+        raise ValueError("Error de sintaxis: La estructura rep no es válida.")
+
+#Prueba para validarRep
+#rep: list[str] = ["rep", 
+#                  "n", 
+#                  "times", 
+#                  "{", 
+#                  "do",
+#                    "isblocked?",
+#                    "(",
+#                        "front",
+#                    ")",
+#                    "{",
+#                        "moves",
+#                        "(",
+#                            "D2",
+#                            ",",
+#                            "D",
+#                            ",",
+#                            "D2",
+#                        ")",
+#                        ";",
+#                    "}",
+#                    "od",
+#                    ";",
+#                    "if",
+#                        "zero?",
+#                        "(",
+#                            "variable",
+#                        ")",
+#                        "then",
+#                        "{",
+#                            "nop",
+#                        ";",
+#                        "}",
+#                        "fi",
+#                    ";",
+#                    "rep",
+#                        "n",
+#                        "times",
+#                        "{",
+#                            "nop",
+#                        ";",
+#                        "}",
+#                    "per",
+#                    ";",
+#                  "}", 
+#                  "per"]
+#try:
+#    print(validarRep(rep))
+#except ValueError as e:
+#    print(e)
+
 ##Prueba para validarDo
 #do: list[str] = ["do",          #0
 #                 "isblocked?",  #1
@@ -780,13 +854,65 @@ def validarDo(tokens: list[str]) -> int:
 #                        "}",            #100
 #                        "fi",          #101
 #                        ";",           #102
-#                     "}"]              #103
+#                        "rep",         #103
+#                        "n",           #104
+#                        "times",       #105
+#                        "{",           #106
+#                            "nop",      #107
+#                        ";",           #108
+#                        "}",           #109
+#                        "per",         #110
+#                        ";",           #111
+#                        "if",          #112
+#                        "not",       #113
+#                        "(",           #114
+#                            "isblocked?",#115
+#                            "(",        #116
+#                                "front",#117
+#                            ")",        #118
+#                        ")",           #119
+#                        "then",        #120
+#                        "{",           #121
+#                            "command",  #122
+#                            "(",        #123
+#                                "n",    #124
+#                            ")",        #125
+#                            ";",        #126
+#                            "rep",      #127
+#                            "n",        #128
+#                            "times",    #129
+#                            "{",        #130
+#                                "do",   #131
+#                                "not",  #132
+#                                "(",    #133
+#                                "isfacing?",#134
+#                                "(",    #135
+#                                    "O",#136
+#                                ")",    #137
+#                                ")",    #138
+#                                "{",    #139
+#                                    "command",#140
+#                                    "(",    #141
+#                                        "n",#142
+#                                    ")",    #143
+#                                    ";",    #144
+#                                "}",    #145
+#                                "od",   #146
+#                            ";",        #147
+#                            "}",        #148
+#                            "per",      #149
+#                        ";",           #150
+#                        "}",           #151
+#                        "fi",           #152
+#                        ";",            #153
+#                     "}"]               #154
 #try:
 #    print(validarBloque(bloque))
 #except ValueError as e:
 #    print(e)
+
 tokens:list[str] = leerTokens("files/prueba3")
-print(tokens)
+#print(tokens)
 
 ##Prueba para validarListaAtributos
 #atributos: list[str] = ["(", "O", ",", "n", ",", "D", ",", "n", ",", "D", ")"]

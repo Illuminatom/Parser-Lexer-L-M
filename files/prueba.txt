@@ -25,7 +25,7 @@ moves (left ,left , forward , right , backwards);
  NEW MACRO fill ()
  {
  rep roomForChips times
- { if not ( zero?( myChips )) then { drop(1) ;} else { nop; } fi ;} ;
+ { if not ( zero?( myChips )) then { drop(1) ;} else { nop; } fi ;} per;
  }
  NEW MACRO fill1 ()
  {
