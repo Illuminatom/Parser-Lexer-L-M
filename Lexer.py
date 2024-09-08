@@ -35,11 +35,11 @@ def revisar_corchetes(str_palabras: str,index:int) :
         i+=1
     if cerrado==True:
         rta=str_palabras[indice_open:indice_close+1]
-        print(rta) 
+        #print(rta) 
         return rta
     else:
         rta=str_palabras[indice_open:]
-        print(rta) 
+        #print(rta) 
         return rta
 def extraer_parametros_turntomy(cadena: str):
     # Expresión regular para extraer todos los parámetros de turntomy
@@ -66,20 +66,20 @@ def procesarParametros(parametros: str,lista_palabras,index) -> tuple[list[str],
     parametros_o=[]
     if "turntomy" in macro_sin_espacios:
         parametros_d=extraer_parametros_turntomy(macro_sin_espacios)
-        print(parametros_d)
+        #print(parametros_d)
         
     if "turntothe" in macro_sin_espacios:
         parametros_o=extraer_parametros_turntothe(macro_sin_espacios)
-        print(parametros_o)
+        #print(parametros_o)
         
-    print(macro_sin_espacios)
+    #print(macro_sin_espacios)
     #print(macro)
     # Verificar que los paréntesis están bien colocados
     if parametros[0] == "(" and parametros[-1] == ")":
         # Remover los paréntesis y separar los parámetros por comas
         listaParametros = parametros[1:-1].split(",")
         listaParametros = [p.strip() for p in listaParametros]  # Limpiar espacios en blanco alrededor de los parámetros
-        print(listaParametros)
+        #print(listaParametros)
         return listaParametros,parametros_o,parametros_d
     else:
         raise ValueError("La cadena de parámetros no tiene el formato correcto con paréntesis.")
@@ -173,7 +173,7 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[],param_O=[],pa
             listTokens.append("O")
             #print("se agrega el token:","O")  
         elif (palabra in personalizedMacros):            # Si la palabra es un macro anteriormente definido
-           listTokens.append("macro({})".format(palabra))
+           listTokens.append(palabra)
 
         elif (palabra == "new"):                         # Si la palabra es NEW se debe ver si se esta definiendo una nueva variable o un nuevo macro
             listTokens.append("new")
@@ -186,6 +186,7 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[],param_O=[],pa
                 i+=1
             elif (listaPalabras[i+1] == "macro") and (listaPalabras[i+2].isalpha() or listaPalabras[i+2].isalnum()):
                 personalizedMacros.append(listaPalabras[i+2])
+                listTokens.append("macro")
                 if listaPalabras[i+3] != "()":
                     #print(listaPalabras[i+3]+listaPalabras[i+4])
                     listaParametros,param_d,param_o=procesarParametros(listaPalabras[i+3]+listaPalabras[i+4],listaPalabras,i+4)
@@ -196,6 +197,7 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[],param_O=[],pa
                 i+=1 
             elif (listaPalabras[i+1] == "macro") and not(listaPalabras[i+2].isalpha() or listaPalabras[i+2].isalnum()):
                 nuevaVar:str = cleanPalabra(listaPalabras[i+2])[0] 
+                listTokens.append("macro")
                 personalizedVariables.append(nuevaVar)
                 i+=1
 
@@ -209,8 +211,8 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[],param_O=[],pa
                 listTokens.extend(tokens)                # Se agregan los tokens a la lista de tokens
                 #print(tokens, " - -- - ",palabra)
             else:
-                listTokens.append("ERROR({})".format(palabra))  # Si no se encontro ningun token se agrega un error a la lista        
-                print("se agrega el token:","ERROR({})".format(palabra))  
+                listTokens.append("ERROR")  # Si no se encontro ningun token se agrega un error a la lista        
+                print("Se agregó un error en la palabra:",palabra)  
         i+=1                                             # Se aumenta el contador para pasar a la siguiente palabra
     
     return listTokens

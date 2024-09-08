@@ -41,25 +41,12 @@ def revisar_lista_tokens(tokens: list[str])-> bool:
         if token=="exec":
             corchetes=revisar_corchetes(str_tokens,i)
             print(corchetes)
-            
-def validar_asignacion_variables(asignacion):
-    respuesta = True
-    respuesta = asignacion[0] == "variable"
-    respuesta = respuesta and asignacion[1] == "="
-    respuesta = respuesta and asignacion[2] == "n"
-    return respuesta 
-def validar_llamada_macro(llamada):
-    llamada_str="".join(llamada)
-    if llamada_str in macros:
-        return True
-    else:
-        return False       
 
 #####                                         #####
 ##### FUNCIONES VERIFICADORAS DE DEFINICIONES #####
 #####                                         #####
-# Funcion que valida la creacion de un nuevo macro y retorna la posicion del token que cierra la definicion del mismo
-def validarNewMacro(tokens:list[str]) -> int:
+# Funcion que valida la creacion de un nuevo macro o una nueva variable y retorna la posicion del token que cierra la definicion del mismo
+def validarNew(tokens:list[str]) -> int:
     if tokens[0] == "new":
         if tokens[1] == "macro":
             if (tokens[2].isalpha() or tokens[2].isalnum()):
@@ -315,6 +302,36 @@ def validarSafeExe(tokens: list[str]) -> int:
 #except ValueError as e:
 #    print(e)
 
+           
+#Funcion que valida que la asignacion de valor a una variable sea correcta y devuelve la posicion del token que cierra la asignacion
+def validarAsignacionVariable(tokens: list[str]) -> int:
+    if(tokens[0] == "variable"):
+        if[(tokens[1] == "=")]: 
+            if(tokens[2] == "n") or (tokens[2] == "variable"):
+                return 2
+            else:
+                raise ValueError("Error de sintaxis: El valor de la variable debe ser 'n' o 'variable' pero es {}.".format(tokens[2]))
+        else:
+            raise ValueError("Error de sintaxis: Falta un signo de igual despues del nombre de la variable.")
+    else:
+        raise ValueError("Error de sintaxis: La asignacion de valor a la variable no es valida.")  
+
+#Funcion que valida que cuando se invoca un macro se haga de forma correcta y devuelve la posicion del token que cierra la invocacion
+def validarInvocacionMacro(tokens: list[str]) -> int:
+    if(tokens[0] in Lexer.personalizedMacros):
+        if(tokens[1] == "("):
+            i:int = 2
+            i += validarListaAtributos(tokens[i:])
+            macroCompleto:str = "".join(tokens[0:i+1])
+            if (tokens[i] == ")") and (macroCompleto in macros):
+                return i
+            else:
+                raise ValueError("Error de sintaxis: Falta un paréntesis de cierre. Hay {} en vez".format(tokens[i]))
+        else:
+            raise ValueError("Error de sintaxis: Falta un paréntesis de apertura.")
+    else:
+        raise ValueError("Error de sintaxis: La invocacion de macro no es valida.")
+
 #####                                                     #####
 #####        FUNCIONES PARA VERIFICAR LOS BLOQUES         #####
 #####                                                     ##### 
@@ -519,6 +536,7 @@ def validarDo(tokens: list[str]) -> int:
 #                 ";",               #93
 #                 "}",               #94
 #                 "od"]              #95
+
 #do: list[str] = ["do",          #0
 #                    "isblocked?",  #1
 #                    "(",           #2
@@ -777,9 +795,15 @@ tokens:list[str] = leerTokens("files/prueba")
 #    print(e)
 
 #Prueba para validar_new_macro
-new_macro: list[str] = ["new", "macro", "macro1", "(", "D", ",", "O", ",", "n",")", "{", "command", "(", "n", ")", ";", "}"]
-try:
-    print(validarNewMacro(new_macro))
-    print(macros)
-except ValueError as e:
-    print(e)
+#new_macro: list[str] = ["new", "macro", "macro1", "(", "D", ",", "O", ",", "n",")", "{", "command", "(", "n", ")", ";", "}"]
+#try:
+#    print(validarNew(new_macro))
+#    print(macros)
+#except ValueError as e:
+#    print(e)
+#Prueba para validarInvocacionMacro
+#invocacion: list[str] = ["macro1", "(", "D", ",", "O", ",", "n", ")"]
+#try:
+#    print(validarInvocacionMacro(invocacion))
+#except ValueError as e:
+#    print(e)
