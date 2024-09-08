@@ -228,6 +228,17 @@ with open("files/lista_palabras.txt", "w") as file:
 
 tokens = convertirATokens(lista_palabras)
 with open("files/tokens.txt", "w") as file:
-    file.write(" ".join(tokens))
+    cadenaTokens:str = ""
+    for token in tokens:
+        if(token == "exec") or (token == "new"):
+            cadenaTokens += "\n"
+        cadenaTokens += token + " "
+    file.write(cadenaTokens)
+
+def imprimirTokensNumerados(tokens:list[str]) -> None:
+    i:int = 0
+    while i < len(tokens):
+        print(tokens[i]+" ---- #{}".format(i))
+        i+=1
 
 #print(" ".join(tokens))

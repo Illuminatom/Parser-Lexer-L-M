@@ -48,25 +48,13 @@ def validarNew(tokens:list[str]) -> int:
     if tokens[0] == "new":
         if tokens[1] == "macro":
             if (tokens[2].isalpha() or tokens[2].isalnum()):
-                if (tokens[3]=="(") and (tokens[4]==")"):
-                    i:int = 5
-                    macros.append(tokens[1:4])
-                    if (tokens[i] == "{"):
-                        i += validarBloque(tokens[i:])
-                        if (tokens[i] == "}"):
-                            return i
-                        else:
-                            raise ValueError("Error de sintaxis: Falta un cierre de bloque.")
-                    else:
-                        raise ValueError("Error de sintaxis: Falta un bloque después de la definición del macro.")
-                elif (tokens[3] == "(") and (tokens[4] != ")"):
+                if (tokens[3] == "("):
                     i:int = 3
                     i += validarListaAtributos(tokens[i:])
                     j:int = i
+                    macros.append("".join(tokens[2:j+1])) 
                     if (tokens[i+1] == "{"):
                             i += validarBloque(tokens[i+1:])+1
-                            print("El token en el que termina el bloque es: ", tokens[i])
-                            macros.append("".join(tokens[2:j+1]))  
                             return i          
                     else:
                         raise ValueError("Error de sintaxis: Falta un bloque después de la definición del macro.")
@@ -94,7 +82,7 @@ def validarListaAtributos(tokens: list[str]) -> int:
         elif (tokens[i] == ")"):
             return i
         else:
-            raise ValueError("Error de sintaxis: La lista de atributos no es válida.")
+            raise ValueError("Error de sintaxis: La lista de atributos no es válida. Hay {0} en vez e i es {1}".format(tokens[i], i))
 
 
  # Funcion que valida las condiciones y devuelve la posicion del token que cierra la condicion
@@ -320,12 +308,15 @@ def validarInvocacionMacro(tokens: list[str]) -> int:
     if(tokens[0] in Lexer.personalizedMacros):
         if(tokens[1] == "("):
             i:int = 2
-            i += validarListaAtributos(tokens[i:])
-            macroCompleto:str = "".join(tokens[0:i+1])
-            if (tokens[i] == ")") and (macroCompleto in macros):
-                return i
+            i += validarListaAtributos(tokens[i-1:])
+            macroCompleto:str = "".join(tokens[0:i])
+            if (tokens[i-1] == ")"):
+                if(macroCompleto in macros):
+                    return i-1
+                else:
+                    raise ValueError("El macro no esta guardado en la lista de macros definidos hasta el momento el macro completo es {0} y los macros guardados son {1}".format(macroCompleto, macros))
             else:
-                raise ValueError("Error de sintaxis: Falta un paréntesis de cierre. Hay {} en vez".format(tokens[i]))
+                raise ValueError("Error de sintaxis: Falta un paréntesis de cierre. Hay {0} en vez".format(tokens[i]))
         else:
             raise ValueError("Error de sintaxis: Falta un paréntesis de apertura.")
     else:
@@ -983,7 +974,11 @@ def validarCompleto(tokens:list[str]) -> str:
         elif (tokens[i] == "new"):
             j:int = i
             i += validarNew(tokens[i:])+1
-            print("La definicion en la posicion {} esta bien escrita \n".format(j))
+            print("La definicion en la posicion {} esta bien escrita".format(j))
+            if (tokens[j+1] == "macro"):
+                print("\t Se definio el macro {} \n".format(tokens[j+2]))
+            elif (tokens[j+1] == "variable"):
+                print("\t Se declaro una variable \n")
         else:
             raise ValueError("Error de sintaxis: El programa no es válido. El input paara el robot debe ser una instruccion exec o una definicion de macro o variable pero hay {} en vez de eso.".format(tokens[i]))
     return "El programa es válido."
@@ -997,15 +992,32 @@ def validarCompleto(tokens:list[str]) -> str:
 
 def Parser() -> None:
     print("BIENVENIDO AL PARSER PARA LA GRAMATICA DEL ROBOT")
-
-    direccionArchivo:str = input("Ingrese la direccion donde esta el archivo: ")
+    direccionArchivo:str = input("Por favor ingrese el la direccion del archivo sin el .txt: ")
     tokens:list[str] = leerTokens(direccionArchivo)
+    opcionI:str = input("Que desea realizar? \n 1. Verificar el archivo \n 2. Ver los Tokens \n 3. Salir \n \t>")
+    while(opcionI != "3"):
+        if(opcionI == "1"):
+            try:
+                print(validarCompleto(tokens))
+                print("FELICIDADES, TODO PARECE FUNCIONAR")
+                opcionI = input("Que desea realizar? \n 1. Verificar el archivo \n 2. Ver los Tokens \n 3. Salir\n \t>")
+            except ValueError as e:
+                print(e)
+                print("Muy mal, el programa fallo :C")
+                opcionI = input("Que desea realizar? \n 1. Verificar el archivo \n 2. Ver los Tokens \n 3. Salir\n \t>")
+        elif(opcionI == "2"):
+            Lexer.imprimirTokensNumerados(tokens)
+            opcionI = input("Que desea realizar? \n 1. Verificar el archivo \n 2. Ver los Tokens \n 3. Salir\n \t>")
+        elif(opcionI == "3"):
+            print("Gracias por usar el programa. Hasta luego")
+        else:
+            print("Opcion invalida")
+            opcionI = input("Que desea realizar? \n 1. Verificar el archivo \n 2. Ver los Tokens \n 3. Salir\n \t>")
 
-    try:
-        print(validarCompleto(tokens))
-        print("FELICIDADES, TODO PARECE FUNCIONAR")
-    except ValueError as e:
-        print(e)
-        print("Muy mal, el programa fallo :C")
     
 Parser()
+
+#try:
+#    print(validarNew(["new", "macro" ,"goend" ,"(" ,")" ,"{" ,"if" ,"not" ,"(", "isblocked?", "(", "front", ")", ")", "then", "{", "command", "(" ,"variable", ")", ";", "goend", "(", ")", ";", "}", "else", "{", "nop", ";", "}", "fi", ";", "}"]))
+#except ValueError as e:
+#    print(e) 

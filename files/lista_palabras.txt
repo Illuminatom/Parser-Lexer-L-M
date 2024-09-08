@@ -56,7 +56,8 @@ rotate
 exec
 {
 foo
-(1
+(right
+,1
 ,3);
 }
 new

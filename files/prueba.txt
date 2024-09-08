@@ -13,7 +13,7 @@ moves (left ,left , forward , right , backwards);
  turnToMy ( f );
  walk( rotate );
  }
- EXEC { foo (1 ,3); }
+ EXEC { foo (right ,1 ,3); }
  NEW VAR one= 1
  NEW MACRO goend ()
  {
