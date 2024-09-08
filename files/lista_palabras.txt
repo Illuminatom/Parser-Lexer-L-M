@@ -120,9 +120,9 @@ fill1
 {
 do
 not
-zero?(
+(zero?(
 roomforchips
-)
+))
 {
 if
 not

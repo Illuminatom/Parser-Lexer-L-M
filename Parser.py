@@ -64,7 +64,8 @@ def validarNew(tokens:list[str]) -> int:
                     i += validarListaAtributos(tokens[i:])
                     j:int = i
                     if (tokens[i+1] == "{"):
-                            i += validarBloque(tokens[i+1:])
+                            i += validarBloque(tokens[i+1:])+1
+                            print("El token en el que termina el bloque es: ", tokens[i])
                             macros.append("".join(tokens[2:j+1]))  
                             return i          
                     else:
@@ -281,7 +282,7 @@ def validarListaMoves(tokens:list[str]) -> int:
 #    print(e)
 
 def validarSafeExe(tokens: list[str]) -> int:
-    if (tokens[0] == "safeexec"):
+    if (tokens[0] == "safeexe"):
         if (tokens[1] == "("):
             i:int = 2
             i += validarComandosN(tokens[i:])
@@ -355,7 +356,7 @@ def validarBloque(tokens: list[str]) -> int:
                 i += 2
             else:
                 raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {} en vez".format(tokens[i]))
-        elif (tokens[i] == "safeexec"):
+        elif (tokens[i] == "safeexe"):
             i += validarSafeExe(tokens[i:])
             if (tokens[i+1] == ";"):
                 i += 2
@@ -384,6 +385,18 @@ def validarBloque(tokens: list[str]) -> int:
                 i += 2
             else:
                 raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {0} en vez y el i es {1} y antes hay {2} y despues hay {3}".format(tokens[i], i, tokens[i-1], tokens))    
+        elif(tokens[i] in Lexer.personalizedMacros):
+            i += validarInvocacionMacro(tokens[i:])
+            if (tokens[i+1] == ";"):
+                i += 2
+            else:
+                raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {} en vez".format(tokens[i]))
+        elif(tokens[i] == "variable"):
+            i += validarAsignacionVariable(tokens[i:])
+            if (tokens[i+1] == ";"):
+                i += 2
+            else:
+                raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {} en vez".format(tokens[i]))
         elif (tokens[i] == "}"):
             return i
         else:
@@ -420,7 +433,6 @@ def validarElse(tokens: list[str]) -> int:
             i += validarBloque(tokens[i:])  #Ultimo token del bloque
         if (tokens[i+1] == "else"):
             i += validarElse(tokens[i+1:])
-        print("El i es {0} y el token[i] es {1}".format(i, tokens[i]))
         return i+1
     else:
         raise ValueError("Error de sintaxis: La estructura else no es válida. Hay {0} y el i es {1}".format(tokens[0], i))
@@ -905,13 +917,37 @@ def validarRep(tokens: list[str]) -> int:
 #                        "}",           #151
 #                        "fi",           #152
 #                        ";",            #153
+#                        "variable",     #154
+#                        "=",            #155
+#                        "n",            #156
+#                        ";",            #157
+#                        "variable",     #158
+#                        "=",            #159
+#                        "variable",     #160
+#                        ";",            #161
+#                        "rep",          #162
+#                        "n",            #163
+#                        "times",        #164
+#                        "{",            #165
+#                            "command",  #166
+#                            "(",        #167
+#                                "n",    #168
+#                            ")",        #169
+#                            ";",        #170
+#                        "}",            #171
+#                        "per",          #172
+#                        ";",            #173
+#                        "variable",     #174
+#                        "=",            #175
+#                        "n",            #176
+#                        ";",            #177
 #                     "}"]               #154
 #try:
 #    print(validarBloque(bloque))
 #except ValueError as e:
 #    print(e)
 
-tokens:list[str] = leerTokens("files/prueba3")
+tokens:list[str] = leerTokens("files/prueba")
 #print(tokens)
 
 ##Prueba para validarListaAtributos
@@ -933,4 +969,43 @@ tokens:list[str] = leerTokens("files/prueba3")
 #try:
 #    print(validarInvocacionMacro(invocacion))
 #except ValueError as e:
+#    print(e)}
+
+
+def validarCompleto(tokens:list[str]) -> str:
+    i:int = 0
+    while (i < len(tokens)):
+        print("Analizando token: {0} en la posicion {1}".format(tokens[i], i))
+        if (tokens[i] == "exec"):
+            j:int = i
+            i += validarBloque(tokens[i+1:])+2
+            print("El EXEC en la posicion {} esta bien escrito \n".format(j))
+        elif (tokens[i] == "new"):
+            j:int = i
+            i += validarNew(tokens[i:])+1
+            print("La definicion en la posicion {} esta bien escrita \n".format(j))
+        else:
+            raise ValueError("Error de sintaxis: El programa no es válido. El input paara el robot debe ser una instruccion exec o una definicion de macro o variable pero hay {} en vez de eso.".format(tokens[i]))
+    return "El programa es válido."
+
+#Prueba para validarCompleto
+#completo: list[str] = ["new", "macro", "macro1", "(", "D", ",", "O", ",", "n",")", "{", "command", "(", "n", ")", ";", "}", "exec", "{", "command", "(", "n", ")", ";", "}"]
+#try:
+#    print(validarCompleto(tokens))
+#except ValueError as e:
 #    print(e)
+
+def Parser() -> None:
+    print("BIENVENIDO AL PARSER PARA LA GRAMATICA DEL ROBOT")
+
+    direccionArchivo = input("Ingrese la direccion donde esta el archivo: ")
+    tokens:list[str] = leerTokens(direccionArchivo)
+
+    try:
+        print(validarCompleto(tokens))
+        print("FELICIDADES, TODO PARECE FUNCIONAR")
+    except ValueError as e:
+        print(e)
+        print("Muy mal, el programa fallo :C")
+    
+Parser()

@@ -29,7 +29,7 @@ moves (left ,left , forward , right , backwards);
  }
  NEW MACRO fill1 ()
  {
- do not zero?( roomForChips )
+ do not (zero?( roomForChips ))
  { if not (zero?( myChips )) then { drop(1) ;} else { nop; } fi ;
  } od;
  }
