@@ -151,7 +151,7 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[],param_O=[],pa
             #print("se agrega el token:",palabra)
         elif  (palabra in param_O):
             listTokens.append("O") 
-            
+
         elif  (palabra in param_D):
             listTokens.append("D") 
                    
@@ -196,9 +196,9 @@ def convertirATokens(listaPalabras: list[str],parametros_macros=[],param_O=[],pa
                     #print("yesid",listaParametros,parametros_macros)
                 i+=1 
             elif (listaPalabras[i+1] == "macro") and not(listaPalabras[i+2].isalpha() or listaPalabras[i+2].isalnum()):
-                nuevaVar:str = cleanPalabra(listaPalabras[i+2])[0] 
+                nuevoMacro:str = cleanPalabra(listaPalabras[i+2])[0] 
                 listTokens.append("macro")
-                personalizedVariables.append(nuevaVar)
+                personalizedMacros.append(nuevoMacro)
                 i+=1
 
         elif(palabra == ""):

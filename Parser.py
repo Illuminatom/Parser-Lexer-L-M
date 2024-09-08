@@ -785,7 +785,8 @@ def validarDo(tokens: list[str]) -> int:
 #    print(validarBloque(bloque))
 #except ValueError as e:
 #    print(e)
-tokens:list[str] = leerTokens("files/prueba")
+tokens:list[str] = leerTokens("files/prueba3")
+print(tokens)
 
 ##Prueba para validarListaAtributos
 #atributos: list[str] = ["(", "O", ",", "n", ",", "D", ",", "n", ",", "D", ")"]
