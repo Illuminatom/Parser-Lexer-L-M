@@ -6,7 +6,7 @@ moveDirections:list[str] = ["forward", "backwards"]
 orientations:list[str] = ["north", "south", "east", "west"]
 constants:list[str] = ["size", "myx", "myy", "mychips", "myballons", "balloonshere", "chipshere", "roomforchips"]
 commands:list[str] = ["walk", "jump", "drop", "pick", "grab", "letgo", "pop"]
-noChanges:list[str] = ["exec", "if", "fi", "else", "then", "do", "od", "rep", "times", "nop", "moves", "not",
+noChanges:list[str] = ["exec", "if", "fi", "else", "then", "do", "od", "rep", "times", "per", "nop", "moves", "not",
                         "isblocked?", "isfacing?", "zero?", "turntomy", "turntothe", "safeexe", "front", "back"]
 symbols:list[str] = ["(", ")", "{", "}", ",", ";","="]
 personalizedMacros:list[str] = []
