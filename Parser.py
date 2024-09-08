@@ -1,4 +1,8 @@
+macros = []
+variables = {}
+
 import os
+import re
 import Lexer
 
 def leerTokens(archivo: str) -> list[str]:
@@ -25,7 +29,7 @@ def revisar_corchetes(str_tokens: str,index:int) -> bool:
             close_counter+=1
         index+=1
     if cerrado==True:
-        print(str_tokens[indice_open:indice_close+1])
+        print(str_tokens[indice_open:indice_close+1]) 
     else:
         print(str_tokens[indice_open:])
     return True
@@ -39,10 +43,63 @@ def revisar_lista_tokens(tokens: list[str])-> bool:
         if token=="exec":
             corchetes=revisar_corchetes(str_tokens,i)
             print(corchetes)
-        
+def validar_asignacion_variables(asignacion):
+    respuesta = True
+    respuesta = asignacion[0] == "variable"
+    respuesta = respuesta and asignacion[1] == "="
+    respuesta = respuesta and asignacion[2] == "n"
+    return respuesta 
+def validar_llamada_macro(llamada):
+    llamada_str="".join(llamada)
+    if llamada_str in macros:
+        return True
+    else:
+        return False       
+def validar_new_variable(new_variable):
+    str_variable=" ".join(new_variable[1:])
+    respuesta = True
+    respuesta = new_variable[0] == "new"
+    respuesta = respuesta and new_variable[1] == "variable"
+    respuesta = respuesta and new_variable[2] == "="
+    respuesta = respuesta and (new_variable[2] == "n" or new_variable[2] == "variable")
+    if respuesta:
+        global variables
+        variables.append(str_variable)
+    return respuesta 
+def validar_new_macro(new_macro:list[str]):
+    respuesta = True
+    if new_macro[0] != "new":
+        return False
+    elif new_macro[1] != "macro":
+        return False
+    elif new_macro[2] == "(":
+        return False
+    elif new_macro[2] != "(":
+        return False
+    elif  not (new_macro[3].isalpha() or new_macro[1].isalnum()):
+        return False
+    elif new_macro[4] == ")":
+        return False
+    if (new_macro[5]=="(") and (new_macro[6]==")"):
+        #revisar bloque
+        #suponiendo que esta bien definido
+        global macros
+        macros.append(new_macro[1:7])
+        pass
+    else:
+        submacro=new_macro[5:]
+        inicio = submacro.index('(')
+        fin = submacro.index(')', inicio)
+        subcadena = "".join(submacro[inicio:fin+1]) 
 
-tokens:list[str] = leerTokens("files/prueba")
-
+        if re.match(r"\((O|n|D)(,(O|n|D))*\)", subcadena):
+            #revisar bloque
+            #suponiendo que esta bien definido
+            global macros
+            macros.append(new_macro[1:fin+1])            
+            pass
+        else:
+            return False 
  # Funcion que valida las condiciones y devuelve la posicion del token que cierra la condicion
 def validarCondiciones(tokens: list[str]) -> int:                 
     i:int = 0
@@ -244,3 +301,5 @@ def validarSafeExe(tokens: list[str]) -> int:
 #    print(validarSafeExe(safeexec))
 #except ValueError as e:
 #    print(e)
+tokens:list[str] = leerTokens("files/prueba")
+revisar_lista_tokens(tokens)

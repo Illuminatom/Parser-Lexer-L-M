@@ -39,12 +39,16 @@ rotate=
 new
 macro
 foo
-(c,
+(f,c,
 p)
 {
 drop(c);
 letgo
 (p);
+turntomy
+(
+f
+);
 walk(
 rotate
 );

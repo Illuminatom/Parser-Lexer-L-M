@@ -7,9 +7,10 @@ safeExe (walk(1));
 moves (left ,left , forward , right , backwards);
 }
  NEW VAR rotate= 3
- NEW MACRO foo (c, p)
+ NEW MACRO foo (f,c, p)
  { drop(c);
  letgo (p);
+ turnToMy ( f );
  walk( rotate );
  }
  EXEC { foo (1 ,3); }
