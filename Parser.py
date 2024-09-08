@@ -286,10 +286,8 @@ def validarBloque(tokens: list[str]) -> int:
                 raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {} en vez".format(tokens[i]))
         elif (tokens[i] == "if"):
             i += validarIf(tokens[i:])
-            if (tokens[i] == "fi"):
-                i += 1
-            if (tokens[i] == ";"):
-                i += 1
+            if (tokens[i] == "fi") or (tokens[i] == ";"):
+                i += 2
             else:
                 raise ValueError("Error de sintaxis: Falta un punto y coma. Hay {0} en vez y el i es {1} y antes hay {2} y despues hay {3}".format(tokens[i], i, tokens[i-1], tokens[i+1]))
         elif (tokens[i] == "do"):
@@ -319,11 +317,9 @@ def validarIf(tokens: list[str]) -> int:
             if (tokens[i] == "{"):
                 i += validarBloque(tokens[i:])+ 1  #Ultimo token del bloque
                 if (tokens[i] == "else"):         #Que haya o no un else es opcional
-                    i += validarElse(tokens[i:]) +1   #Ultimo token del else y su bloque
-                if (tokens[i] == ";") or (tokens[i] == "od") or (tokens[i] == "per"):
-                    return i +2
+                    i += validarElse(tokens[i:])    #Ultimo token del else y su bloque
                 if (tokens[i] == "fi"):
-                    return i+1
+                    return i
                 else:
                     raise ValueError("Error de sintaxis: Falta el cierre de la estructura if. Hay {0} y el i es {1} y antes hay {2} y despues hay {3}".format(tokens[i], i, tokens[i-1], tokens[i+1]))
         else:
@@ -339,7 +335,8 @@ def validarElse(tokens: list[str]) -> int:
             i += validarBloque(tokens[i:])  #Ultimo token del bloque
         if (tokens[i+1] == "else"):
             i += validarElse(tokens[i+1:])
-        return i
+        print("El i es {0} y el token[i] es {1}".format(i, tokens[i]))
+        return i+1
     else:
         raise ValueError("Error de sintaxis: La estructura else no es válida. Hay {0} y el i es {1}".format(tokens[0], i))
     
@@ -353,7 +350,7 @@ def validarDo(tokens: list[str]) -> int:
             if (tokens[i] == ";"):
                 i += 1
             if (tokens[i] == "od"):
-                return i+1
+                return i
             else:
                 raise ValueError("Error de sintaxis: Falta el cierre de la estructura do. Hay {0} y el i es {1} y antes hay {2} y despues hay {3}".format(tokens[i], i, tokens[i-1], tokens[i+1]))
         else:
@@ -381,43 +378,82 @@ def validarDo(tokens: list[str]) -> int:
 #                 "(",           #17
 #                 "variable",    #18
 #                 ")",           #19
-#                 "{", 
-#                 "if",          #20
-#                    "isblocked?",  #21
-#                    "(",           #22
-#                    "front",       #23
-#                    ")",           #24
-#                    "then",        #25
-#                    "{",           #26
-#                    "do",          #27
-#                        "not",      #28
-#                        "(",        #29
-#                        "isblocked?",#30
-#                        "(",        #31
-#                        "front",    #32
-#                        ")",        #33
+#                 "{",           #20
+#                 "if",          #21
+#                    "isblocked?",  #22
+#                    "(",           #23
+#                    "front",       #24
+#                    ")",           #25
+#                    "then",        #26
+#                    "{",           #27
+#                    "do",          #28
+#                        "not",      #29
+#                        "(",        #30
+#                        "isblocked?",#31
+#                        "(",        #32
+#                        "front",    #33
 #                        ")",        #34
-#                        "{",        #35
-#                        "moves",    #36
-#                        "(",        #37
-#                        "D2",       #38
-#                        ",",        #39
-#                        "D",        #40
-#                        ",",        #41
-#                        "D2",       #42
-#                        ")",        #43
-#                        ";",        #44
-#                        "}",        #45
-#                        "od",       #46
-#                    ";",            #47
-#                    "}",            #48
-#                    "fi",           #49
-#                 ";",               #50
-#                 "}",               #51
-#                 "od",              #52
-#                 ";",               #53
-#                 "}",               #54
-#                 "od"]              #55
+#                        ")",        #35
+#                        "{",        #36
+#                        "moves",    #37
+#                        "(",        #38
+#                        "D2",       #39
+#                        ",",        #40
+#                        "D",        #41
+#                        ",",        #42
+#                        "D2",       #43
+#                        ")",        #44
+#                        ";",        #45
+#                        "}",        #46
+#                        "od",       #47
+#                    ";",            #48
+#                    "}",            #49
+#                    "else",         #50
+#                    "{",            #51
+#                        "nop",      #52
+#                    ";",            #53
+#                    "}",            #54
+#                    "else",         #55
+#                    "{",            #56
+#                        "safeexec", #57
+#                        "(",        #58
+#                        "command",  #59
+#                        "(",        #60
+#                            "n",    #61
+#                        ")",        #62
+#                        ")",        #63
+#                        ";",        #64
+#                        "do",        #65
+#                        "isblocked?",#66
+#                        "(",        #67
+#                            "back", #68
+#                        ")",        #69
+#                        "{",        #70
+#                            "nop",  #71
+#                        ";",        #72
+#                        "}",        #73
+#                        "od",       #74
+#                        ";",        #75
+#                        "if",       #76
+#                            "zero?",    #77
+#                            "(",        #78
+#                                "variable", #79
+#                            ")",        #80
+#                            "then",     #81
+#                            "{",        #82
+#                                "nop",  #83
+#                            ";",        #84
+#                            "}",        #85
+#                            "fi",       #86
+#                        ";",        #87
+#                    "}",            #88
+#                    "fi",           #89
+#                 ";",               #90
+#                 "}",               #91
+#                 "od",              #92
+#                 ";",               #93
+#                 "}",               #94
+#                 "od"]              #95
 #try:
 #    print(validarDo(do))
 #except ValueError as e:
@@ -474,26 +510,22 @@ def validarDo(tokens: list[str]) -> int:
 #                "}",            #47
 #                "else",         #48
 #                "{",            #49
-#                    "do",           #50
-#                    "isblocked?",   #51
+#                    "if",           #50
+#                        "isblocked?",   #51
 #                        "(",            #52
-#                            "front",        #53
+#                            "back",         #53
 #                        ")",            #54
-#                    "{",            #55
-#                    "moves",        #56
-#                    "(",            #57
-#                        "D2",           #58
-#                        ",",            #59
-#                        "D",            #60
-#                        ",",            #61
-#                        "D2",           #62
-#                        ")",            #63
-#                        ";",            #64
-#                    "}",            #65
-#                    "od",           #66 
-#                ";",            #67
-#                "}",            #68
-#                "fi"]           #69
+#                    "then",         #55
+#                    "{",            #56
+#                        "nop",           #57
+#                    ";",            #58
+#                    "}",            #59
+#                    "fi",           #60
+#                ";",            #61
+#                    "nop",          #62
+#                ";",            #63
+#                "}",            #64
+#                "fi"]           #65
 
 #si2:list[str] = ["if",           #0
 #                        "isblocked?",   #1
@@ -610,7 +642,29 @@ def validarDo(tokens: list[str]) -> int:
 #                        "}",           #78
 #                        "od",          #79
 #                        ";",           #80
-#                     "}"]              #81
+#                        "if",          #81
+#                        "isfacing?",   #82
+#                        "(",           #83
+#                            "O",       #84
+#                        ")",           #85
+#                        "then",        #86
+#                        "{",           #87
+#                            "command",  #88
+#                            "(",        #89
+#                                "n",    #90
+#                            ")",        #91
+#                            ";",        #92
+#                        "}",           #93
+#                        "else",        #94
+#                        "{",            #95
+#                            "nop",      #96
+#                            ";",            #97
+#                            "nop",      #98
+#                            ";",            #99
+#                        "}",            #100
+#                        "fi",          #101
+#                        ";",           #102
+#                     "}"]              #103
 #try:
 #    print(validarBloque(bloque))
 #except ValueError as e:
