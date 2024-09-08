@@ -998,7 +998,7 @@ def validarCompleto(tokens:list[str]) -> str:
 def Parser() -> None:
     print("BIENVENIDO AL PARSER PARA LA GRAMATICA DEL ROBOT")
 
-    direccionArchivo = input("Ingrese la direccion donde esta el archivo: ")
+    direccionArchivo:str = input("Ingrese la direccion donde esta el archivo: ")
     tokens:list[str] = leerTokens(direccionArchivo)
 
     try:
