@@ -84,7 +84,7 @@ def procesarParametros(parametros: str,lista_palabras,index) -> tuple[list[str],
         listaParametros = [p.strip() for p in listaParametros]
         
         # Retornar la lista de parámetros junto con los parámetros 'd' y 'o'
-        return listaParametros, parametros_o, parametros_d
+        return listaParametros, parametros_d, parametros_o
     else:
         raise
 
