@@ -39,10 +39,10 @@ rotate=
 new
 macro
 foo
-(f,c,
+(f,comida,
 p)
 {
-drop(c);
+drop(comida);
 letgo
 (p);
 turntomy

@@ -75,15 +75,18 @@ def procesarParametros(parametros: str,lista_palabras,index) -> tuple[list[str],
     #print(macro_sin_espacios)
     #print(macro)
     # Verificar que los paréntesis están bien colocados
-    if parametros[0] == "(" and parametros[-1] == ")":
-        # Remover los paréntesis y separar los parámetros por comas
+    # Verificar que los paréntesis están bien colocados
+    if parametros.startswith("(") and parametros.endswith(")"):
+        # Remover los paréntesis externos y separar los parámetros por comas
         listaParametros = parametros[1:-1].split(",")
-        listaParametros = [p.strip() for p in listaParametros]  # Limpiar espacios en blanco alrededor de los parámetros
-        #print(listaParametros)
-        return listaParametros,parametros_o,parametros_d
+        
+        # Limpiar espacios en blanco alrededor de los parámetros
+        listaParametros = [p.strip() for p in listaParametros]
+        
+        # Retornar la lista de parámetros junto con los parámetros 'd' y 'o'
+        return listaParametros, parametros_d, parametros_o
     else:
-        raise ValueError("La cadena de parámetros no tiene el formato correcto con paréntesis.")
-
+        raise
 
 def crearListaPalabras(archivo: str) -> list[str]:
     strLineas = ""
