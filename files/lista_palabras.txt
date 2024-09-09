@@ -152,10 +152,3 @@ grab
 balloonshere
 );
 }
-new
-macro
-moveanddrop(chips)
-{
-walk(steps);
-drop(chips);
-}
